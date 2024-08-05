@@ -17,7 +17,7 @@ namespace ProductApi.Infrastructure.Repositories
             {
                 // check if the product already exists
                 var getProduct = await GetByAsync(_ => _.Name!.Equals(entity.Name));
-                if (getProduct is not null || !string.IsNullOrEmpty(getProduct.Name))
+                if (getProduct is not null && !string.IsNullOrEmpty(getProduct.Name))
                     return new Response(false, $"{entity.Name} already added");
 
                 var currentEntity = context.Products.Add(entity).Entity;
@@ -46,7 +46,7 @@ namespace ProductApi.Infrastructure.Repositories
                 if (product is null)
                     return new Response(false, $"{entity.Name} not found!");
 
-                context.Products.Remove(entity);
+                context.Products.Remove(product);
                 await context.SaveChangesAsync();
 
                 return new Response(true, $"{entity.Name} is deleted successfully");
@@ -125,7 +125,7 @@ namespace ProductApi.Infrastructure.Repositories
                     return new Response(false, $"{entity.Name} not found");
 
                 context.Entry(product).State = EntityState.Detached;
-                context.Products.Update(product);
+                context.Products.Update(entity);
                 await context.SaveChangesAsync();
 
                 return new Response(true, $"{entity.Name} is updated successfully");
