@@ -89,5 +89,37 @@ namespace UnitTest.ProductApi.Repositories
             result.Flag.Should().BeTrue();
             result.Message.Should().Be("Product is deleted successfully");
         }
+
+        // GET PRODUCT BY ID
+        [Fact]
+        public async Task FindByIdAsync_WhenProductIsNotFound_ReturnsNull()
+        {
+            // arrange 
+            var productId = 1;
+
+            // Act
+            var result = await productRepository.FindByIdAsync(productId);
+
+            // Assert
+            result.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task FindByIdAsync_WhenProductIsFound_ReturnsProduct()
+        {
+            // arrange 
+            var product = new Product { Id = 1, Name = "Product", Price = 43.22m, Quantity = 10 };
+            productDbContext.Products.Add(product);
+            await productDbContext.SaveChangesAsync();
+
+            // Act
+            var result = await productRepository.FindByIdAsync(product.Id);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Id.Should().Be(1);
+            result.Name.Should().Be("Product");
+            //result.Should().Be(product);
+        }
     }
 }
