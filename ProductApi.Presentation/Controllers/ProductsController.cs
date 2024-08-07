@@ -45,8 +45,8 @@ namespace ProductApi.Presentation.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<Response>> CreateProduct(ProductDTO product)
         {
-            if(!User.IsInRole("Admin"))
-                return BadRequest("This action is restricted!");
+            //if(!User.IsInRole("Admin"))
+            //    return BadRequest("This action is restricted!");
 
             // check model state is valid
             if (!ModelState.IsValid)
