@@ -56,5 +56,38 @@ namespace UnitTest.ProductApi.Repositories
             result.Flag.Should().BeTrue();
             result.Message.Should().Be("Product added to database successfully!");
         }
+
+        // DELETE PRODUCT
+        [Fact]
+        public async Task DeleteAsync_WhenProductIsNotFound_ReturnsNotFoundResponse()
+        {
+            // arrange 
+            var product = new Product { Id = 1,  Name = "Product", Quantity = 32, Price = 78.12m };
+
+            // Act
+            var result = await productRepository.DeleteAsync(product);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Flag.Should().BeFalse();
+            result.Message.Should().Be("Product not found!");
+        }
+
+        [Fact]
+        public async Task DeleteAsync_WhenProductIsFound_ReturnsSuccessResponse()
+        {
+            // arrange 
+            var product = new Product { Name = "Product" };
+            productDbContext.Products.Add(product);
+            await productDbContext.SaveChangesAsync();
+
+            // Act
+            var result = await productRepository.DeleteAsync(product);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Flag.Should().BeTrue();
+            result.Message.Should().Be("Product is deleted successfully");
+        }
     }
 }
