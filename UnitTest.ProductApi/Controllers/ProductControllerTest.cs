@@ -135,5 +135,66 @@ namespace UnitTest.ProductApi.Controllers
             responseResult!.Message.Should().Be("Failed");
             responseResult!.Flag.Should().BeFalse();
         }
+
+
+        // UPDATE PRODUCT
+        [Fact]
+        public async Task UpdateProduct_WhenModelStateIsInvalid_ReturnBadRequest()
+        {
+            // Arrange
+            var productDTO = new ProductDTO(1, "Product 1", 34, 18.99m);
+            productsController.ModelState.AddModelError("Name", "Required");
+
+            // Act
+            var result = await productsController.UpdateProduct(productDTO);
+
+            // Assert
+            var badRequestResult = result.Result as BadRequestObjectResult;
+            badRequestResult.Should().NotBeNull();
+            badRequestResult!.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+        }
+
+        [Fact]
+        public async Task UpdateProduct_WhenUpdateIsSuccessful_ReturnOkResponse()
+        {
+            // Arrange
+            var productDTO = new ProductDTO(1, "Product 1", 34, 18.99m);
+            var response = new Response(true, "Updated");
+
+            // Act
+            A.CallTo(() => productInterface.UpdateAsync(A<Product>.Ignored)).Returns(response);
+            var result = await productsController.UpdateProduct(productDTO);
+
+            // Assert
+            var okResult = result.Result as OkObjectResult;
+            okResult!.Should().NotBeNull();
+            okResult!.StatusCode.Should().Be(StatusCodes.Status200OK);
+
+            var responseResult = okResult.Value as Response;
+            responseResult!.Message.Should().Be("Updated");
+            responseResult!.Flag.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task UpdateProduct_WhenUpdateFails_ReturnBadRequestResponse()
+        {
+            // Arrange
+            var productDTO = new ProductDTO(1, "Product 1", 34, 18.99m);
+            var response = new Response(false, "Failed");
+
+            // Act
+            A.CallTo(() => productInterface.UpdateAsync(A<Product>.Ignored)).Returns(response);
+            var result = await productsController.UpdateProduct(productDTO);
+
+            // Assert
+            var badRequestResult = result.Result as BadRequestObjectResult;
+            badRequestResult!.Should().NotBeNull();
+            badRequestResult!.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+
+            var responseResult = badRequestResult.Value as Response;
+            responseResult!.Should().NotBeNull();
+            responseResult!.Message.Should().Be("Failed");
+            responseResult!.Flag.Should().BeFalse();
+        }
     }
 }
