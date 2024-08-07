@@ -196,5 +196,49 @@ namespace UnitTest.ProductApi.Controllers
             responseResult!.Message.Should().Be("Failed");
             responseResult!.Flag.Should().BeFalse();
         }
+
+        // DELETE PRODUCT
+        [Fact]
+        public async Task DeleteProduct_WhenDeleteIsSuccessful_ReturnOkResponse()
+        {
+            // Arrange
+            var productDTO = new ProductDTO(1, "Product 1", 34, 18.99m);
+            var response = new Response(true, "Deleted");
+
+            // Act
+            A.CallTo(() => productInterface.DeleteAsync(A<Product>.Ignored)).Returns(response);
+            var result = await productsController.DeleteProduct(productDTO);
+
+            // Assert
+            var okResult = result.Result as OkObjectResult;
+            okResult!.Should().NotBeNull();
+            okResult!.StatusCode.Should().Be(StatusCodes.Status200OK);
+
+            var responseResult = okResult.Value as Response;
+            responseResult!.Message.Should().Be("Deleted");
+            responseResult!.Flag.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task DeleteProduct_WhenDeleteFails_ReturnBadRequestResponse()
+        {
+            // Arrange
+            var productDTO = new ProductDTO(1, "Product 1", 34, 18.99m);
+            var response = new Response(false, "Delete Failed");
+
+            // Act
+            A.CallTo(() => productInterface.DeleteAsync(A<Product>.Ignored)).Returns(response);
+            var result = await productsController.DeleteProduct(productDTO);
+
+            // Assert
+            var badRequestResult = result.Result as BadRequestObjectResult;
+            badRequestResult!.Should().NotBeNull();
+            badRequestResult!.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+
+            var responseResult = badRequestResult.Value as Response;
+            responseResult!.Should().NotBeNull();
+            responseResult!.Message.Should().Be("Delete Failed");
+            responseResult!.Flag.Should().BeFalse();
+        }
     }
 }

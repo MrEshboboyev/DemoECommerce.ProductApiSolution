@@ -81,8 +81,8 @@ namespace ProductApi.Presentation.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<Response>> DeleteProduct(ProductDTO product)
         {
-            if (!User.IsInRole("Admin"))
-                return BadRequest("This action is restricted!");
+            //if (!User.IsInRole("Admin"))
+            //    return BadRequest("This action is restricted!");
 
             // convert to entity from dto and return
             var getEntity = ProductConversion.ToEntity(product);
